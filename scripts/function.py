@@ -4,10 +4,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Function to load the data
-def load_data(train_path, test_path):
+def load_data(train_path, test_path , store_path):
     train = pd.read_csv(train_path)
     test = pd.read_csv(test_path)
-    return train, test
+    store =pd.read_csv(store_path)
+    return train, test,store
 
 # Function to inspect the data for missing values and structure
 def inspect_data(df):
@@ -98,29 +99,35 @@ def check_store_open_sales(train):
 
     print("Average weekend sales for stores always open:", always_open_sales.mean())
     print("Average weekend sales for other stores:", other_stores_sales.mean())
+# Merge the datasets on 'Store'
+def merge_data(train, store):
+    # Merging store data and sales data on 'Store' column
+    merged_data = pd.merge(train, store[['Store', 'Assortment','CompetitionDistance']], on='Store', how='left')
+    return merged_data
+
 # Function to analyze the impact of assortment type on sales
-def check_assortment_impact(train):
+def check_assortment_impact(store):
     plt.figure(figsize=(10,6))
-    sns.boxplot(x='Assortment', y='Sales', data=train)
+    sns.boxplot(x='Assortment', y='Sales', data=store)
     plt.title('Effect of Assortment Type on Sales')
     plt.show()
 
-    avg_sales_by_assortment = train.groupby('Assortment')['Sales'].mean()
+    avg_sales_by_assortment = store.groupby('Assortment')['Sales'].mean()
     print("Average sales by assortment type:\n", avg_sales_by_assortment)
 # Function to analyze the impact of competition distance on sales
-def check_competition_distance(train):
+def check_competition_distance(store):
     plt.figure(figsize=(10,6))
-    sns.scatterplot(x='CompetitionDistance', y='Sales', data=train)
+    sns.scatterplot(x='CompetitionDistance', y='Sales', data=store)
     plt.title('Effect of Competition Distance on Sales')
     plt.show()
 
-    no_competition_sales = train[train['CompetitionDistance'].isna()]['Sales'].mean()
-    competition_sales = train[train['CompetitionDistance'].notna()]['Sales'].mean()
+    no_competition_sales = store[store['CompetitionDistance'].isna()]['Sales'].mean()
+    competition_sales = store[store['CompetitionDistance'].notna()]['Sales'].mean()
     print("Average sales for stores without competition data (NA):", no_competition_sales)
     print("Average sales for stores with competition data:", competition_sales)
 # Function to analyze the impact of opening or reopening of competitors
-def check_competitor_reopening(train):
-    competition_na = train[train['CompetitionDistance'].isna()]['Store'].unique()
-    competition_reopen_sales = train[train['Store'].isin(competition_na)].groupby('Store')['Sales'].mean()
+def check_competitor_reopening(store):
+    competition_na = store[store['CompetitionDistance'].isna()]['Store'].unique()
+    competition_reopen_sales = store[store['Store'].isin(competition_na)].groupby('Store')['Sales'].mean()
 
     print("Sales impact for stores with later competition reopening:", competition_reopen_sales.head())

@@ -13,7 +13,7 @@ def load_data(train_path, test_path):
 def inspect_data(df):
     print(df.info())
     print(df.isnull().sum())
-    print(df.describe())
+    
 # Function to check the distribution of promotions in the training and test sets
 def check_promo_distribution(train, test):
     plt.figure(figsize=(10,6))

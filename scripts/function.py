@@ -9,6 +9,10 @@ def load_data(train_path, test_path , store_path):
     test = pd.read_csv(test_path)
     store =pd.read_csv(store_path)
     return train, test,store
+def load_data_2(train_path, test_path):
+    train = pd.read_csv(train_path)
+    test = pd.read_csv(test_path)
+    return train, test
 
 # Function to inspect the data for missing values and structure
 def inspect_data(df):
